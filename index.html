@@ -67,6 +67,7 @@ Collaborators:
       // data model at global scope for easier debugging
       var board;
       var rules;
+      var moveInputElement;
 
       // initialize board
       if ($.getUrlVar("size") && $.getUrlVar("size") >= 3) {
@@ -81,6 +82,7 @@ Collaborators:
       // Final initialization entry point: the Javascript code inside this block
       // runs at the end of start-up when the page has finished loading.
       $(document).ready(function () {
+        moveInputElement = document.getElementById("move-input");
         for (var r = 0; r < board.boardSize; r++) {
           var x = document.getElementById("candy-grid").insertRow(r);
           for (var c = 0; c < board.boardSize; c++) {
@@ -112,7 +114,25 @@ Collaborators:
 
       // move a candy on the board
       $(board).on("move", function (e, info) {
-        // Your code here.
+        var candyToBeRemoved = document.getElementById(
+          "candy-id-" + info.candy.id
+        );
+        candyToBeRemoved.parentNode.removeChild(candyToBeRemoved);
+
+        var div = document.createElement("div");
+        $(div).data("candy", info.candy);
+        $(div).addClass("candy-" + info.candy.color);
+        $(div).attr("id", "candy-id-" + info.candy.id);
+
+        position =
+          String.fromCharCode(info.candy.col + 97) +
+          (info.candy.row + 1).toString();
+        $(div).attr("position", position);
+        $(div).append(position);
+
+        var row = $("#candy-grid").children().children()[info.candy.row];
+        var cell = $(row).children()[info.candy.col];
+        cell.append(div);
       });
 
       // remove a candy from the board
@@ -127,8 +147,20 @@ Collaborators:
       });
 
       // Button Events
-      $(document).on("click", "#newGame", function (evt) {
-        NewGame();
+      $(document).on("click", ".btn", function (evt) {
+        btnId = evt.target.id;
+        if (btnId === "new-game") {
+          newGame();
+        } else if (
+          btnId === "up" ||
+          btnId === "left" ||
+          btnId === "right" ||
+          btnId === "down"
+        ) {
+          moveCandy(btnId);
+        }
+        moveInputElement.value = "";
+        moveInputElement.focus();
       });
 
       // keyboard events arrive here
@@ -136,9 +168,21 @@ Collaborators:
         // Your code here.
       });
 
-      function NewGame() {
+      function newGame() {
         board.clear();
         rules.prepareNewGame();
+      }
+
+      function moveCandy(directionId) {
+        var position = moveInputElement.value;
+        var candyElement = $("div").find(`[position='${position}']`);
+        if (candyElement != null) {
+          var fromCandy = candyElement.data().candy;
+          if (rules.isMoveTypeValid(fromCandy, directionId)) {
+            var toCandy = board.getCandyInDirection(fromCandy, directionId);
+            board.flipCandies(fromCandy, toCandy);
+          }
+        }
       }
     </script>
   </head>
@@ -157,7 +201,7 @@ Collaborators:
             type="button"
             role="button"
             value="New Game"
-            id="newGame"
+            id="new-game"
           />
         </div>
 
@@ -174,18 +218,18 @@ Collaborators:
         >
           <div class="d-flex justify-content-center">
             <p class="h4">Move:</p>
-            <input type="text" class="mx-2 w-25" />
+            <input type="text" id="move-input" value="" class="mx-2 w-25" />
           </div>
           <div class="my-4 d-flex flex-column align-items-center">
             <div>
-              <input class="btn m-0" type="button" value="↑" />
+              <input class="btn m-0" id="up" type="button" value="↑" />
             </div>
             <div class="horizontal-arrows d-flex justify-content-between my-2">
-              <input class="btn m-0" type="button" value="←" />
-              <input class="btn m-0" type="button" value="→" />
+              <input class="btn m-0" id="left" type="button" value="←" />
+              <input class="btn m-0" id="right" type="button" value="→" />
             </div>
             <div>
-              <input class="btn m-0" type="button" value="↓" />
+              <input class="btn m-0" id="down" type="button" value="↓" />
             </div>
           </div>
           <input
