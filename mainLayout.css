@@ -2,10 +2,73 @@
  * Redistribution of original or derived work requires permission of course staff.
  */
 
-/* REMOVE ME - dashed lines and height for debugging */
-#mainColumn {
-  outline: 1px dashed orange;
-  height: 200px;
+.container {
+  height: 100vh;
 }
 
-/* Your css code here! */
+/* Doubt: good naming convention -> hyphen-separated-case or camelCase */
+.red-text {
+  color: red;
+}
+
+.btn {
+  color: black;
+  background-color: lightgray;
+}
+
+.btn:hover {
+  color: white;
+  background-color: black;
+}
+
+.horizontal-arrows {
+  width: 200px;
+}
+
+td {
+  border: 1px solid white;
+}
+
+table {
+  width: 320px;
+  height: 320px;
+}
+
+.candy-red,
+.candy-purple,
+.candy-orange,
+.candy-blue,
+.candy-green,
+.candy-yellow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  color: white;
+}
+
+.candy-red {
+  background-color: red;
+}
+
+.candy-purple {
+  background-color: purple;
+}
+
+.candy-orange {
+  background-color: orange;
+}
+
+.candy-blue {
+  background-color: blue;
+}
+
+.candy-green {
+  background-color: green;
+}
+
+.candy-yellow {
+  background-color: yellow;
+  color: gray;
+}
