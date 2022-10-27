@@ -6,20 +6,26 @@
   height: 100vh;
 }
 
-/* Doubt: good naming convention -> hyphen-separated-case or camelCase */
 .red-text {
   color: red;
 }
 
-.btn {
-  color: black;
+#new-game {
+  background-color: rgb(236, 118, 118);
+}
+
+#new-game:hover {
+  color: white;
+  background-color: black;
+}
+
+.arrow {
   background-color: lightgray;
 }
 
-/* todo: remove for other buttons  */
-.btn:hover {
-  color: white;
-  background-color: black;
+#crush-once {
+  background-color: lightgray;
+  color: gray;
 }
 
 .horizontal-arrows {
@@ -27,6 +33,8 @@
 }
 
 td {
+  width: 40px;
+  height: 40px;
   border: 1px solid white;
 }
 

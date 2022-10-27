@@ -181,6 +181,7 @@ Collaborators: Discussed with nobody
       function newGame() {
         board.clear();
         rules.prepareNewGame();
+        inputElement.focus();
       }
 
       function isValidMove(directionId) {
@@ -216,19 +217,22 @@ Collaborators: Discussed with nobody
       function arrowButtonStylingEnabled(id) {
         var element = document.getElementById(id);
         $(element).css("background-color", "green");
+        $(element).css("color", "white");
         $(element).hover(
           function () {
             $(this).css("background-color", "limegreen");
           },
           function () {
             $(this).css("background-color", "green");
+            $(this).css("color", "white");
           }
         );
       }
 
       function arrowButtonsStylingDisabled() {
-        var element = document.querySelectorAll("#up, #down, #right, #left");
+        var element = document.getElementsByClassName("arrow");
         $(element).css("background-color", "");
+        $(element).css("color", "black");
         $(element).hover(function () {
           $(this).css("background-color", "");
         });
@@ -263,12 +267,14 @@ Collaborators: Discussed with nobody
           // enabled
           $(inputElement).attr("disabled", "disabled");
           $("#crush-once").removeAttr("disabled");
-          $("#crush-once").css("background-color", "green");
+          $("#crush-once").css("background-color", "rgb(236, 118, 118)");
+          $("#crush-once").css("color", "black");
         } else {
           // disabled
           $(inputElement).removeAttr("disabled");
           $("#crush-once").attr("disabled", "disabled");
           $("#crush-once").css("background-color", "");
+          $("#crush-once").css("color", "gray");
         }
       }
 
@@ -278,6 +284,7 @@ Collaborators: Discussed with nobody
         await setTimeout(function () {
           rules.moveCandiesDown();
           checkCrushability();
+          inputElement.focus()
         }, 500);
       }
     </script>
@@ -325,14 +332,14 @@ Collaborators: Discussed with nobody
           </div>
           <div class="my-4 d-flex flex-column align-items-center">
             <div>
-              <input class="btn m-0" id="up" type="button" value="↑" />
+              <input class="btn arrow m-0" id="up" type="button" role="button" value="↑" />
             </div>
             <div class="horizontal-arrows d-flex justify-content-between my-2">
-              <input class="btn m-0" id="left" type="button" value="←" />
-              <input class="btn m-0" id="right" type="button" value="→" />
+              <input class="btn arrow m-0" id="left" type="button" role="button" value="←" />
+              <input class="btn arrow m-0" id="right" type="button" role="button" value="→" />
             </div>
             <div>
-              <input class="btn m-0" id="down" type="button" value="↓" />
+              <input class="btn arrow m-0" id="down" type="button" role="button" value="↓" />
             </div>
           </div>
           <input
