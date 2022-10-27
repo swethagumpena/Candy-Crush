@@ -89,7 +89,8 @@ Collaborators: Discussed with nobody
             var y = x.insertCell(c);
           }
         }
-        disableMoveButtons(true);
+        enableArrowButtons(false);
+        newGame();
       });
 
       /* Event Handlers */
@@ -111,6 +112,8 @@ Collaborators: Discussed with nobody
         var row = $("#candy-grid").children().children()[info.candy.row];
         var cell = $(row).children()[info.candy.col];
         cell.append(div);
+
+        checkCrushability();
       });
 
       // move a candy on the board
@@ -134,6 +137,8 @@ Collaborators: Discussed with nobody
         var row = $("#candy-grid").children().children()[info.candy.row];
         var cell = $(row).children()[info.candy.col];
         cell.append(div);
+
+        checkCrushability();
       });
 
       // remove a candy from the board
@@ -159,7 +164,10 @@ Collaborators: Discussed with nobody
           btnId === "down"
         ) {
           moveCandy(btnId);
+          enableArrowButtons(false);
           arrowButtonsStylingDisabled();
+        } else if (btnId == "crush-once") {
+          crushOnce();
         }
         inputElement.value = "";
         inputElement.focus();
@@ -196,13 +204,12 @@ Collaborators: Discussed with nobody
         }
       }
 
-      function disableMoveButtons(disabled, id = "#right, #left, #up, #down") {
-        var arrowButtons = id;
-        if (disabled) {
-          $(arrowButtons).attr("disabled", "disabled");
+      function enableArrowButtons(enabled, id = "#right, #left, #up, #down") {
+        var arrowButton = id;
+        if (enabled) {
+          $(arrowButton).removeAttr("disabled");
         } else {
-          console.log("in false");
-          $(arrowButtons).removeAttr("disabled");
+          $(arrowButton).attr("disabled", "disabled");
         }
       }
 
@@ -230,24 +237,48 @@ Collaborators: Discussed with nobody
       function onInputChange() {
         if (inputElement.validity.valid && inputElement != "") {
           if (isValidMove("up").validity) {
-            disableMoveButtons(false, "#up");
+            enableArrowButtons(true, "#up");
             arrowButtonStylingEnabled("up");
           }
           if (isValidMove("down").validity) {
-            disableMoveButtons(false, "#down");
+            enableArrowButtons(true, "#down");
             arrowButtonStylingEnabled("down");
           }
           if (isValidMove("right").validity) {
-            disableMoveButtons(false, "#right");
+            enableArrowButtons(true, "#right");
             arrowButtonStylingEnabled("right");
           }
           if (isValidMove("left").validity) {
-            disableMoveButtons(false, "#left");
+            enableArrowButtons(true, "#left");
             arrowButtonStylingEnabled("left");
           }
         } else {
-          disableMoveButtons(true);
+          enableArrowButtons(false);
+          arrowButtonsStylingDisabled();
         }
+      }
+
+      function checkCrushability() {
+        if (rules.getCandyCrushes().length != 0) {
+          // enabled
+          $(inputElement).attr("disabled", "disabled");
+          $("#crush-once").removeAttr("disabled");
+          $("#crush-once").css("background-color", "green");
+        } else {
+          // disabled
+          $(inputElement).removeAttr("disabled");
+          $("#crush-once").attr("disabled", "disabled");
+          $("#crush-once").css("background-color", "");
+        }
+      }
+
+      async function crushOnce() {
+        $(inputElement).attr("disabled", "disabled");
+        rules.removeCrushes(rules.getCandyCrushes());
+        await setTimeout(function () {
+          rules.moveCandiesDown();
+          checkCrushability();
+        }, 500);
       }
     </script>
   </head>
@@ -259,8 +290,7 @@ Collaborators: Discussed with nobody
           class="col-md-3 d-flex flex-column align-items-center mt-3"
           id="firstColumn"
         >
-          <p class="h1 red-text text-center m-0 font-weight-bold">Candy</p>
-          <p class="h1 red-text text-center m-0 font-weight-bold">Crush</p>
+          <p class="h1 red-text text-center m-0 font-weight-bold">Candy</br>Crush</p>
           <input
             class="btn px-4 mt-3"
             type="button"
@@ -310,11 +340,10 @@ Collaborators: Discussed with nobody
             type="button"
             role="button"
             value="Crush Once"
+            id="crush-once"
           />
         </div>
       </div>
-      <!-- class="row" -->
     </div>
-    <!-- class="container" -->
   </body>
 </html>
