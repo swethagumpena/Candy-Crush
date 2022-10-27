@@ -1,7 +1,7 @@
 <!--
 CandyCrush
 Your Name: Swetha Gumpena
-Collaborators:
+Collaborators: Discussed with nobody
 -->
 <!DOCTYPE html>
 <html>
@@ -67,7 +67,7 @@ Collaborators:
       // data model at global scope for easier debugging
       var board;
       var rules;
-      var moveInputElement;
+      var inputElement;
 
       // initialize board
       if ($.getUrlVar("size") && $.getUrlVar("size") >= 3) {
@@ -82,13 +82,14 @@ Collaborators:
       // Final initialization entry point: the Javascript code inside this block
       // runs at the end of start-up when the page has finished loading.
       $(document).ready(function () {
-        moveInputElement = document.getElementById("move-input");
+        inputElement = document.getElementById("input");
         for (var r = 0; r < board.boardSize; r++) {
           var x = document.getElementById("candy-grid").insertRow(r);
           for (var c = 0; c < board.boardSize; c++) {
             var y = x.insertCell(c);
           }
         }
+        disableMoveButtons(true);
       });
 
       /* Event Handlers */
@@ -158,9 +159,10 @@ Collaborators:
           btnId === "down"
         ) {
           moveCandy(btnId);
+          arrowButtonsStylingDisabled();
         }
-        moveInputElement.value = "";
-        moveInputElement.focus();
+        inputElement.value = "";
+        inputElement.focus();
       });
 
       // keyboard events arrive here
@@ -173,15 +175,78 @@ Collaborators:
         rules.prepareNewGame();
       }
 
-      function moveCandy(directionId) {
-        var position = moveInputElement.value;
+      function isValidMove(directionId) {
+        var position = inputElement.value;
         var candyElement = $("div").find(`[position='${position}']`);
         if (candyElement != null) {
           var fromCandy = candyElement.data().candy;
-          if (rules.isMoveTypeValid(fromCandy, directionId)) {
-            var toCandy = board.getCandyInDirection(fromCandy, directionId);
-            board.flipCandies(fromCandy, toCandy);
+          return {
+            validity: rules.isMoveTypeValid(fromCandy, directionId),
+            fromCandy,
+          };
+        }
+      }
+
+      function moveCandy(directionId) {
+        var validity = isValidMove(directionId).validity;
+        var fromCandy = isValidMove(directionId).fromCandy;
+        if (validity) {
+          var toCandy = board.getCandyInDirection(fromCandy, directionId);
+          board.flipCandies(fromCandy, toCandy);
+        }
+      }
+
+      function disableMoveButtons(disabled, id = "#right, #left, #up, #down") {
+        var arrowButtons = id;
+        if (disabled) {
+          $(arrowButtons).attr("disabled", "disabled");
+        } else {
+          console.log("in false");
+          $(arrowButtons).removeAttr("disabled");
+        }
+      }
+
+      function arrowButtonStylingEnabled(id) {
+        var element = document.getElementById(id);
+        $(element).css("background-color", "green");
+        $(element).hover(
+          function () {
+            $(this).css("background-color", "limegreen");
+          },
+          function () {
+            $(this).css("background-color", "green");
           }
+        );
+      }
+
+      function arrowButtonsStylingDisabled() {
+        var element = document.querySelectorAll("#up, #down, #right, #left");
+        $(element).css("background-color", "");
+        $(element).hover(function () {
+          $(this).css("background-color", "");
+        });
+      }
+
+      function onInputChange() {
+        if (inputElement.validity.valid && inputElement != "") {
+          if (isValidMove("up").validity) {
+            disableMoveButtons(false, "#up");
+            arrowButtonStylingEnabled("up");
+          }
+          if (isValidMove("down").validity) {
+            disableMoveButtons(false, "#down");
+            arrowButtonStylingEnabled("down");
+          }
+          if (isValidMove("right").validity) {
+            disableMoveButtons(false, "#right");
+            arrowButtonStylingEnabled("right");
+          }
+          if (isValidMove("left").validity) {
+            disableMoveButtons(false, "#left");
+            arrowButtonStylingEnabled("left");
+          }
+        } else {
+          disableMoveButtons(true);
         }
       }
     </script>
@@ -218,7 +283,15 @@ Collaborators:
         >
           <div class="d-flex justify-content-center">
             <p class="h4">Move:</p>
-            <input type="text" id="move-input" value="" class="mx-2 w-25" />
+            <input
+              type="text"
+              id="input"
+              value=""
+              class="mx-2 w-25"
+              oninput="onInputChange()"
+              maxlength="2"
+              pattern="^[A-Ha-h][1-8]"
+            />
           </div>
           <div class="my-4 d-flex flex-column align-items-center">
             <div>

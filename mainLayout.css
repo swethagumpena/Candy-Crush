@@ -16,6 +16,7 @@
   background-color: lightgray;
 }
 
+/* todo: remove for other buttons  */
 .btn:hover {
   color: white;
   background-color: black;
