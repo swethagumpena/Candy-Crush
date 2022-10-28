@@ -101,50 +101,46 @@ Collaborators: Discussed with nobody
         var div = document.createElement("div");
         $(div).data("candy", info.candy);
         $(div).addClass("candy-" + info.candy.color);
-        $(div).attr("id", "candy-id-" + info.candy.id);
-
+        $(div).attr("id", "candy-" + info.candy.id);
         position =
           String.fromCharCode(info.candy.col + 97) +
           (info.candy.row + 1).toString();
         $(div).attr("position", position);
         $(div).append(position);
-
         var row = $("#candy-grid").children().children()[info.candy.row];
         var cell = $(row).children()[info.candy.col];
         cell.append(div);
-
         checkCrushability();
       });
 
       // move a candy on the board
       $(board).on("move", function (e, info) {
         var candyToBeRemoved = document.getElementById(
-          "candy-id-" + info.candy.id
+          "candy-" + info.candy.id
         );
         candyToBeRemoved.parentNode.removeChild(candyToBeRemoved);
 
         var div = document.createElement("div");
         $(div).data("candy", info.candy);
         $(div).addClass("candy-" + info.candy.color);
-        $(div).attr("id", "candy-id-" + info.candy.id);
-
+        $(div).attr("id", "candy-" + info.candy.id);
         position =
           String.fromCharCode(info.candy.col + 97) +
           (info.candy.row + 1).toString();
         $(div).attr("position", position);
         $(div).append(position);
-
         var row = $("#candy-grid").children().children()[info.candy.row];
         var cell = $(row).children()[info.candy.col];
         cell.append(div);
-
         checkCrushability();
       });
 
       // remove a candy from the board
       $(board).on("remove", function (e, info) {
-        var element = document.getElementById("candy-id-" + info.candy.id);
-        element.parentNode.removeChild(element);
+        var candyToBeRemoved = document.getElementById(
+          "candy-" + info.candy.id
+        );
+        candyToBeRemoved.parentNode.removeChild(candyToBeRemoved);
       });
 
       // move a candy on the board
@@ -175,7 +171,16 @@ Collaborators: Discussed with nobody
 
       // keyboard events arrive here
       $(document).on("keydown", function (evt) {
-        // Your code here.
+        switch (evt.originalEvent.key) {
+          case "n": // n for new game
+            newGame();
+            inputElement.value = "";
+            break;
+          case " ": // spacebar for crush once
+            crushOnce();
+            inputElement.value = "";
+            break;
+        }
       });
 
       function newGame() {
@@ -185,9 +190,9 @@ Collaborators: Discussed with nobody
       }
 
       function isValidMove(directionId) {
-        var position = inputElement.value;
+        var position = inputElement.value.toLowerCase();
         var candyElement = $("div").find(`[position='${position}']`);
-        if (candyElement != null) {
+        if (candyElement.length != 0) {
           var fromCandy = candyElement.data().candy;
           return {
             validity: rules.isMoveTypeValid(fromCandy, directionId),
@@ -259,6 +264,12 @@ Collaborators: Discussed with nobody
         } else {
           enableArrowButtons(false);
           arrowButtonsStylingDisabled();
+          if (
+            inputElement.value.toLowerCase() == "n" ||
+            inputElement.value == " "
+          ) {
+            inputElement.value = "";
+          }
         }
       }
 
@@ -278,13 +289,13 @@ Collaborators: Discussed with nobody
         }
       }
 
-      async function crushOnce() {
+      function crushOnce() {
         $(inputElement).attr("disabled", "disabled");
         rules.removeCrushes(rules.getCandyCrushes());
-        await setTimeout(function () {
+        setTimeout(function () {
           rules.moveCandiesDown();
           checkCrushability();
-          inputElement.focus()
+          inputElement.focus();
         }, 500);
       }
     </script>
@@ -297,7 +308,9 @@ Collaborators: Discussed with nobody
           class="col-md-3 d-flex flex-column align-items-center mt-3"
           id="firstColumn"
         >
-          <p class="h1 red-text text-center m-0 font-weight-bold">Candy</br>Crush</p>
+          <p class="h1 red-text text-center m-0 font-weight-bold">
+            Candy<br />Crush
+          </p>
           <input
             class="btn px-4 mt-3"
             type="button"
@@ -332,14 +345,38 @@ Collaborators: Discussed with nobody
           </div>
           <div class="my-4 d-flex flex-column align-items-center">
             <div>
-              <input class="btn arrow m-0" id="up" type="button" role="button" value="↑" />
+              <input
+                class="btn arrow m-0"
+                id="up"
+                type="button"
+                role="button"
+                value="↑"
+              />
             </div>
             <div class="horizontal-arrows d-flex justify-content-between my-2">
-              <input class="btn arrow m-0" id="left" type="button" role="button" value="←" />
-              <input class="btn arrow m-0" id="right" type="button" role="button" value="→" />
+              <input
+                class="btn arrow m-0"
+                id="left"
+                type="button"
+                role="button"
+                value="←"
+              />
+              <input
+                class="btn arrow m-0"
+                id="right"
+                type="button"
+                role="button"
+                value="→"
+              />
             </div>
             <div>
-              <input class="btn arrow m-0" id="down" type="button" role="button" value="↓" />
+              <input
+                class="btn arrow m-0"
+                id="down"
+                type="button"
+                role="button"
+                value="↓"
+              />
             </div>
           </div>
           <input
